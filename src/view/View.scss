@@ -1,0 +1,9 @@
+.View {
+  $box_size: 30px;
+
+  .crossword-letter {
+    display: inline-block;
+    border: 1px solid black;
+    width: $box_size;
+  }
+}

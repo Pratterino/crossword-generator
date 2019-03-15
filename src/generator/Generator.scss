@@ -1,0 +1,23 @@
+.Generator {
+  margin: 0 auto;
+  width: 500px;
+  position: relative;
+
+
+  .left {
+    position: absolute;
+    text-align: left;
+    left: 0;
+  }
+
+  .right {
+    position: absolute;
+    text-align: right;
+    right: 0;
+  }
+
+  form {
+    position: inherit;
+    margin-top: 20px;
+  }
+}
