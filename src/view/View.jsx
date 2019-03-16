@@ -6,14 +6,14 @@ class View extends Component {
         return input.map(row => {
             return (
                 <div className="crossword-row">
-                    <div className="crossword-letter">{
-                        <svg viewBox="0 0 56 18">
+                    <div className="crossword-letter">
+                        <svg viewBox="-50 -50 100 100" preserveAspectRatio="xMidYMid meet">
                             <text
-                                x="56"
-                                y="18"
+                                fontSize="20pt"
+                                dy=".3em"
                             >{row.clue}</text>
                         </svg>
-                    }</div>
+                    </div>
                     {[...row.word].map(letter => (
                         <div className="crossword-letter">{letter}</div>
                     ))}
