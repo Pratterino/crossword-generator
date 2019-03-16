@@ -1,17 +1,25 @@
 .Generator {
   margin: 0 auto;
   width: 500px;
-  position: relative;
 
+  .generator-header {
+    display: flex;
+    justify-content: space-evenly;
+
+    .left, .right {
+      display: flex;
+      text-align: left;
+    }
+  }
 
   .left {
-    position: absolute;
+    position: relative;
     text-align: left;
     left: 0;
   }
 
   .right {
-    position: absolute;
+    position: relative;
     text-align: right;
     right: 0;
   }

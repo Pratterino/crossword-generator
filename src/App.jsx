@@ -5,10 +5,7 @@ import './App.scss';
 
 class App extends Component {
     state = {
-        inputValues: [{
-            word: "",
-            clue: "",
-        }],
+        inputValues: [],
     };
 
     updateWordState = (newInputValues) => {

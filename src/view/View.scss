@@ -1,9 +1,19 @@
 .View {
   $box_size: 30px;
 
+  svg {
+    width: 100%;
+  }
+
+  .crossword-row {
+
+  }
+
   .crossword-letter {
     display: inline-block;
     border: 1px solid black;
     width: $box_size;
+    height: $box_size;
+    vertical-align: center;
   }
 }

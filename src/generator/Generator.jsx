@@ -5,28 +5,65 @@ import './Generator.scss';
 class Generator extends Component {
     handleChangeFor = (inputIndex, type) => (event) => {
         const {inputValues} = this.props;
-        inputValues[inputIndex][type] = event.target.value;
+        const newInputValues = [...inputValues];
 
-        this.props.updateWordState(inputValues);
+        if (newInputValues[inputIndex]) {
+            newInputValues[inputIndex][type] = event.target.value;
+        } else {
+            newInputValues.push({
+                word: type === "word" ? event.target.value : "",
+                clue: type === "clue" ? event.target.value : "",
+            });
+        }
+
+        this.props.updateWordState(newInputValues);
     };
 
-    render() {
+    renderCubeValue = (index, values) => {
+        return (
+            <div className="generator-pair">
+                <input
+                    type="text"
+                    className="left"
+                    onChange={this.handleChangeFor(index, "word")}
+                    value={values.word}
+                />
+
+                <input
+                    type="text"
+                    className="right"
+                    onChange={this.handleChangeFor(index, "clue")}
+                    value={values.clue}
+                />
+            </div>
+        );
+    };
+
+    renderInputRows() {
         const {inputValues} = this.props;
+        if (!inputValues) {
+            return null;
+        }
+
+        const newThing = inputValues.map((inputValue, index) => this.renderCubeValue(index, inputValue));
+
+        return [
+            ...newThing,
+            this.renderCubeValue(inputValues.length, {}),
+        ];
+    }
+
+    render() {
 
         return (
             <section className="Generator">
-                Generator
-                <div className="left">Word</div>
-                <div className="right">Clue</div>
+                <div className="generator-header">
+                    <div className="left">Word</div>
+                    <div className="right">Clue</div>
+                </div>
 
                 <form onSubmit={(e) => e.preventDefault()}>
-                    {inputValues && inputValues.map((values, index) => (
-                        <React.Fragment>
-                            <input className="left" onChange={this.handleChangeFor(index, "word")} value={values.word}/>
-                            <input className="right" onChange={this.handleChangeFor(index, "clue")}
-                                   value={values.clue}/>
-                        </React.Fragment>
-                    ))}
+                    {this.renderInputRows()}
                 </form>
             </section>
         );
