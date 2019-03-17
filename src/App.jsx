@@ -5,23 +5,41 @@ import './App.scss';
 
 class App extends Component {
     state = {
-        inputValues: [],
+        board: [],
+        options: {
+            ROW: 25,
+            COLUMNS: 25,
+        },
+        inputValues: [{
+            word: "banana",
+            clue: "monkey treat",
+        }, {
+            word: "money",
+            clue: "people want it",
+        }],
     };
 
     updateWordState = (newInputValues) => {
         this.setState({inputValues: newInputValues});
     };
 
+    updateBoard = (newBoard) => {
+        this.setState({board: newBoard});
+    };
 
     render() {
         return (
             <div className="App">
-                <View inputValues={this.state.inputValues}/>
+                <View {...this.state}/>
                 <hr/>
                 <Generator
-                    inputValues={this.state.inputValues}
+                    {...this.state}
+                    updateBoard={this.updateBoard}
                     updateWordState={this.updateWordState}
                 />
+                <section>
+                    <pre style={{textAlign: "left"}}>{JSON.stringify(this.state, null, 2)}</pre>
+                </section>
             </div>
         );
     }

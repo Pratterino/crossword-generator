@@ -22,12 +22,25 @@ class View extends Component {
         })
     };
 
+    displayBoard = () => {
+        const board = this.props.board;
+        let output = '';
+        board.forEach(row => {
+            row.forEach((letter) => {
+                output += letter;
+            });
+            output += "\n";
+        });
+        return (
+            <pre>{output}</pre>
+        );
+    };
+
     render() {
-        const {inputValues} = this.props;
 
         return (
             <section className="View">
-                <div>{this.renderCrosswordRow(inputValues)}</div>
+                <div>{this.displayBoard(20)}</div>
             </section>
         );
     }

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import './Generator.scss';
 
 class Generator extends Component {
+
     handleChangeFor = (inputIndex, type) => (event) => {
         const {inputValues} = this.props;
         const newInputValues = [...inputValues];
@@ -16,7 +17,21 @@ class Generator extends Component {
             });
         }
 
+        this.insertWord();
         this.props.updateWordState(newInputValues);
+    };
+
+    componentDidMount() {
+        this.buildBoard(20);
+    }
+
+    buildBoard = (size) => {
+        const board = Array(size);
+        for (let row = 0; row < size; row++) {
+            board[row] = Array(size).fill("⬜");
+        }
+
+        this.props.updateBoard(board);
     };
 
     renderCubeValue = (index, values) => {
@@ -53,6 +68,20 @@ class Generator extends Component {
         ];
     }
 
+    insertWord = () => {
+        let {inputValues, board} = this.props;
+        const newBoard = board.map((row, i) => {
+            console.info(row, i);
+            return row.map(char => {
+                return "A"
+            });
+        });
+        // inputValues[0].word
+        console.log(this.props.board[0][1]);
+
+        this.props.updateBoard(newBoard)
+    };
+
     render() {
 
         return (
@@ -71,6 +100,7 @@ class Generator extends Component {
 }
 
 Generator.propTypes = {
+    updateBoard: PropTypes.func.isRequired,
     updateWordState: PropTypes.func.isRequired,
 };
 
