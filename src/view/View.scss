@@ -15,5 +15,9 @@
     width: $box_size;
     height: $box_size;
     vertical-align: center;
+
+    &.block {
+      background: #000;
+    }
   }
 }

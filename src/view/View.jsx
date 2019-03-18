@@ -27,7 +27,7 @@ class View extends Component {
     };
 
     renderWordOntoRow = (word) => {
-        const {board, inputValues} = this.props;
+        const {inputValues} = this.props;
 
         return inputValues.map(row => {
             return (
@@ -54,9 +54,16 @@ class View extends Component {
         return board.map(row => {
             return (
                 <div className="crossword-row">
-                    {row.map(letter => (
-                        <div className="crossword-letter">{letter}</div>
-                    ))}
+                    {row.map(letter => {
+                        if (letter === ".") {
+                            return (
+                                <div className="crossword-letter block">{letter}</div>
+                            );
+                        }
+                        return (
+                            <div className={`crossword-letter ${letter === "." && "block"}`}>{letter}</div>
+                        );
+                    })}
                 </div>
             );
         });

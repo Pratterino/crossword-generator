@@ -78,18 +78,18 @@ class Generator extends Component {
     insertWord = (word) => {
         let {board} = this.props;
 
-        const rowNumber = Math.floor(Math.random() * board.length + 1);
+        const rowNumber = Math.floor(Math.random() * board.length);
 
         board.forEach((row, i) => {
             // the row we want to insert word into
             if (i === rowNumber) {
+                const columnStart = Math.floor(Math.random() * (board[rowNumber].length - word.length));
                 row.forEach((letter, j) => {
                     if (j < word.length) {
-                        board[i][j] = word[j];
+                        board[i][columnStart + j] = word[j];
                     }
                 });
             }
-            //let rowy2 = row.fill(inputValues[0].word[0], 0, inputValues[0].word.length);
         });
 
         this.props.updateBoard(board);
