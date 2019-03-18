@@ -7,8 +7,7 @@ class App extends Component {
     state = {
         board: [],
         options: {
-            ROW: 25,
-            COLUMNS: 25,
+            SIZE: 15,
         },
         inputValues: [{
             word: "banana",
@@ -28,6 +27,7 @@ class App extends Component {
     };
 
     render() {
+        console.table(this.state.board);
         return (
             <div className="App">
                 <View {...this.state}/>
@@ -38,7 +38,7 @@ class App extends Component {
                     updateWordState={this.updateWordState}
                 />
                 <section>
-                    <pre style={{textAlign: "left"}}>{JSON.stringify(this.state, null, 2)}</pre>
+                    <pre style={{textAlign: "left"}}>{JSON.stringify({...this.state, board: "=>"}, null, 2)}</pre>
                 </section>
             </div>
         );

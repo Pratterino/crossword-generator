@@ -4,7 +4,7 @@ import './Generator.scss';
 
 class Generator extends Component {
 
-    handleChangeFor = (inputIndex, type) => (event) => {
+    handleInputChange = (inputIndex, type) => (event) => {
         const {inputValues} = this.props;
         const newInputValues = [...inputValues];
 
@@ -17,37 +17,44 @@ class Generator extends Component {
             });
         }
 
-        this.insertWord();
         this.props.updateWordState(newInputValues);
     };
 
     componentDidMount() {
-        this.buildBoard(20);
+        this.generateBoard();
+        setTimeout(() => {
+            this.props.inputValues.forEach(inputValue => {
+                this.insertWord(inputValue.word);
+            });
+        }, 0);
     }
 
-    buildBoard = (size) => {
-        const board = Array(size);
-        for (let row = 0; row < size; row++) {
-            board[row] = Array(size).fill("⬜");
+
+    generateBoard = () => {
+        const {SIZE} = this.props.options;
+
+        const board = Array(SIZE);
+        for (let row = 0; row < SIZE; row++) {
+            board[row] = Array(SIZE).fill(".");
         }
 
         this.props.updateBoard(board);
     };
 
-    renderCubeValue = (index, values) => {
+    renderInputPair = (index, values) => {
         return (
             <div className="generator-pair">
                 <input
                     type="text"
                     className="left"
-                    onChange={this.handleChangeFor(index, "word")}
+                    onChange={this.handleInputChange(index, "word")}
                     value={values.word}
                 />
 
                 <input
                     type="text"
                     className="right"
-                    onChange={this.handleChangeFor(index, "clue")}
+                    onChange={this.handleInputChange(index, "clue")}
                     value={values.clue}
                 />
             </div>
@@ -60,26 +67,32 @@ class Generator extends Component {
             return null;
         }
 
-        const newThing = inputValues.map((inputValue, index) => this.renderCubeValue(index, inputValue));
+        const newThing = inputValues.map((inputValue, index) => this.renderInputPair(index, inputValue));
 
         return [
             ...newThing,
-            this.renderCubeValue(inputValues.length, {}),
+            this.renderInputPair(inputValues.length, {}),
         ];
     }
 
-    insertWord = () => {
-        let {inputValues, board} = this.props;
-        const newBoard = board.map((row, i) => {
-            console.info(row, i);
-            return row.map(char => {
-                return "A"
-            });
-        });
-        // inputValues[0].word
-        console.log(this.props.board[0][1]);
+    insertWord = (word) => {
+        let {board} = this.props;
 
-        this.props.updateBoard(newBoard)
+        const rowNumber = Math.floor(Math.random() * board.length + 1);
+
+        board.forEach((row, i) => {
+            // the row we want to insert word into
+            if (i === rowNumber) {
+                row.forEach((letter, j) => {
+                    if (j < word.length) {
+                        board[i][j] = word[j];
+                    }
+                });
+            }
+            //let rowy2 = row.fill(inputValues[0].word[0], 0, inputValues[0].word.length);
+        });
+
+        this.props.updateBoard(board);
     };
 
     render() {
