@@ -15,6 +15,15 @@ class App extends Component {
         }, {
             word: "money",
             clue: "people want it",
+        }, {
+            word: "bagpipe",
+            clue: "a so called \"sound vest\"",
+        }, {
+            word: "peppermint",
+            clue: "a horrendous taste",
+        }, {
+            word: "peanuts",
+            clue: "causes allergic reaction",
         }],
     };
 
