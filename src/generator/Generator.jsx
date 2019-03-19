@@ -3,6 +3,10 @@ import PropTypes from 'prop-types';
 import './Generator.scss';
 
 class Generator extends Component {
+    direction = {
+        HORIZONTAL: "HORIZONTAL",
+        VERTICAL: "VERTICAL",
+    };
 
     handleInputChange = (inputIndex, type) => (event) => {
         const {inputValues} = this.props;
@@ -23,8 +27,9 @@ class Generator extends Component {
     componentDidMount() {
         this.generateBoard();
         setTimeout(() => {
-            this.props.inputValues.forEach(inputValue => {
-                this.insertWord(inputValue.word);
+            this.props.inputValues.forEach((inputValue, i) => {
+                let direction = i % 2 ? this.direction.HORIZONTAL : this.direction.VERTICAL;
+                this.insertWord(inputValue.word, direction);
             });
         }, 0);
     }
@@ -75,7 +80,7 @@ class Generator extends Component {
         ];
     }
 
-    insertWord = (word) => {
+    insertWord = (word, direction) => {
         let {board} = this.props;
 
         const rowNumber = Math.floor(Math.random() * board.length);
@@ -86,7 +91,11 @@ class Generator extends Component {
                 const columnStart = Math.floor(Math.random() * (board[rowNumber].length - (word.length - 1)));
                 row.forEach((letter, j) => {
                     if (j < word.length) {
-                        board[i][columnStart + j] = word[j];
+                        if (direction === this.direction.HORIZONTAL) {
+                            board[i][columnStart + j] = word[j];
+                        } else if (direction === this.direction.VERTICAL) {
+                            board[j][columnStart] = word[j];
+                        }
                     }
                 });
             }
