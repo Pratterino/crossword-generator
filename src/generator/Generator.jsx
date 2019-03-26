@@ -3,6 +3,10 @@ import PropTypes from 'prop-types';
 import './Generator.scss';
 
 class Generator extends Component {
+    state = {
+        words: this.props.inputValues.sort(w => w.length),
+    };
+
     direction = {
         HORIZONTAL: "HORIZONTAL",
         VERTICAL: "VERTICAL",
@@ -27,10 +31,7 @@ class Generator extends Component {
     componentDidMount() {
         this.generateBoard();
         setTimeout(() => {
-            this.props.inputValues.forEach((inputValue, i) => {
-                let direction = i % 2 ? this.direction.HORIZONTAL : this.direction.VERTICAL;
-                this.insertWord(inputValue.word, direction);
-            });
+            this.insertAWord(this.state.words[0], this.direction.HORIZONTAL);
         }, 0);
     }
 
@@ -80,21 +81,113 @@ class Generator extends Component {
         ];
     }
 
-    insertWord = (word, direction) => {
+    findWhereLetterExistsOnBoard = (event) => {
+        const letter = event.target.value;
+        const {board} = this.props;
+        let matches = [];
+
+        board.forEach((row, rowIndex) => {
+            row.forEach((cell, columnIndex) => {
+                if (cell.toLowerCase() === letter.toLowerCase()) {
+                    matches.push({rowIndex, columnIndex});
+                }
+            });
+        });
+
+        return matches;
+    };
+
+    placeAWord = (word) => {
+        [...word].forEach((letter, index) => {
+            if (index >= 1 && index <= letter.length) {
+                let matches = this.findWhereLetterExistsOnBoard({
+                    target: {
+                        value: letter,
+                    }
+                }) || [];
+
+                // if any matches
+                if (!!matches.length) {
+                    console.info(`MATCHES: [${word}] (${letter}) ==>`, matches);
+                } else {
+                    console.info(`NO MATCHES: [${word}]`);
+                    this.insertAWord(word, this.direction.HORIZONTAL)
+                }
+            }
+        });
+
+        // this.canPlaceLetterAt();
+        // board[rowNumber].forEach((row, rowIndex) => {
+//
+        //         row.forEach((letter, columnIndex) => {
+        //             if (letter === word[columnIndex]) {
+        //                 console.info("MATCH => ", word[columnIndex], letter, `row: ${rowIndex}, col:${columnIndex}`);
+        //                 startRowIndexForWord = rowIndex;
+        //                 startColumnIndexForWord = columnIndex;
+        //             }
+        //             if (columnIndex < word.length) {
+        //                 if (direction === this.direction.HORIZONTAL) {
+        //                     board[startRowIndexForWord][startColumnIndexForWord + columnIndex] = word[columnIndex];
+        //                 }
+        //                 if (direction === this.direction.VERTICAL) {
+        //                     board[columnIndex][startColumnIndexForWord] = word[columnIndex];
+        //                 }
+        //             }
+        //         });
+        //     }
+        // })
+    };
+
+    canPlaceLetterAt = (row, column, letter) => {
+        switch (this.props.board[row][column]) {
+            case '.':
+            case letter:
+                return true;
+            default:
+                return false;
+        }
+    };
+
+    insertAWord = (word, direction) => {
+        let {board} = this.props;
+        const rowNumber = Math.floor(board.length / 2);
+        const columnStartIndex = Math.floor((board.length - word.word.length) / 2);
+
+        board[rowNumber].forEach((cell, columnIndex) => {
+            if (columnIndex < word.word.length) {
+                if (direction === this.direction.HORIZONTAL) {
+                    board[rowNumber][columnStartIndex + columnIndex] = word.word[columnIndex];
+                }
+            }
+        });
+        console.error(board);
+        this.props.updateBoard(board);
+    };
+
+    insertWords = (word, direction) => {
         let {board} = this.props;
 
         const rowNumber = Math.floor(Math.random() * board.length);
 
-        board.forEach((row, i) => {
+        board.forEach((row, rowIndex) => {
+            if (rowIndex === 0) {
+                console.info("FIRST", word);
+                this.placeAWord(word);
+            }
+
             // the row we want to insert word into
-            if (i === rowNumber) {
+            if (rowIndex === rowNumber) {
                 const columnStart = Math.floor(Math.random() * (board[rowNumber].length - (word.length - 1)));
-                row.forEach((letter, j) => {
-                    if (j < word.length) {
+                let startRowIndexForWord = rowNumber;
+                let startColumnIndexForWord = columnStart;
+
+                row.forEach((letter, columnIndex) => {
+                    if (columnIndex < word.length) {
                         if (direction === this.direction.HORIZONTAL) {
-                            board[i][columnStart + j] = word[j];
-                        } else if (direction === this.direction.VERTICAL) {
-                            board[j][columnStart] = word[j];
+                            board[startRowIndexForWord][startColumnIndexForWord + columnIndex] = word[columnIndex];
+                        }
+                        if (direction === this.direction.VERTICAL) {
+                            board[columnIndex][startColumnIndexForWord] = word[columnIndex];
                         }
                     }
                 });
@@ -113,6 +206,7 @@ class Generator extends Component {
                     <div className="right">Clue</div>
                 </div>
 
+                <input onChange={this.findWhereLetterExistsOnBoard} maxLength={1}/>
                 <form onSubmit={(e) => e.preventDefault()}>
                     {this.renderInputRows()}
                 </form>
