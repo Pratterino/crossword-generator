@@ -3,8 +3,16 @@ import PropTypes from 'prop-types';
 import './Generator.scss';
 
 class Generator extends Component {
+    shuffleArray = (array) => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    };
+
     state = {
-        words: this.props.inputValues.sort(w => w.length),
+        words: this.shuffleArray(this.props.inputValues),
     };
 
     direction = {
@@ -31,7 +39,17 @@ class Generator extends Component {
     componentDidMount() {
         this.generateBoard();
         setTimeout(() => {
-            this.insertAWord(this.state.words[0], this.direction.HORIZONTAL);
+            const words = [...this.state.words];
+            if (!words.length) {
+                return false;
+            }
+
+            this.state.words.forEach((word, i) => {
+                this.insertAWord(word, i % 2 ? this.direction.HORIZONTAL : this.direction.VERTICAL);
+                // delete the placed word.
+                words.splice(i, 1);
+                this.setState({words});
+            });
         }, 0);
     }
 
@@ -153,10 +171,12 @@ class Generator extends Component {
         const rowNumber = Math.floor(board.length / 2);
         const columnStartIndex = Math.floor((board.length - word.word.length) / 2);
 
-        board[rowNumber].forEach((cell, columnIndex) => {
-            if (columnIndex < word.word.length) {
+        board[rowNumber].forEach((cell, index) => {
+            if (index < word.word.length) {
                 if (direction === this.direction.HORIZONTAL) {
-                    board[rowNumber][columnStartIndex + columnIndex] = word.word[columnIndex];
+                    board[rowNumber][columnStartIndex + index] = word.word[index];
+                } else {
+                    board[columnStartIndex + index][rowNumber] = word.word[index];
                 }
             }
         });
@@ -170,11 +190,6 @@ class Generator extends Component {
         const rowNumber = Math.floor(Math.random() * board.length);
 
         board.forEach((row, rowIndex) => {
-            if (rowIndex === 0) {
-                console.info("FIRST", word);
-                this.placeAWord(word);
-            }
-
             // the row we want to insert word into
             if (rowIndex === rowNumber) {
                 const columnStart = Math.floor(Math.random() * (board[rowNumber].length - (word.length - 1)));
