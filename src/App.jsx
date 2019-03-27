@@ -9,26 +9,17 @@ class App extends Component {
         options: {
             SIZE: 15,
         },
-        inputValues: [{
+        words: [{
             word: "banana",
             clue: "monkey treat",
         }, {
             word: "money",
             clue: "people want it",
-        }, {
-            word: "bagpipe",
-            clue: "a so called \"sound vest\"",
-        }, {
-            word: "peppermint",
-            clue: "a horrendous taste",
-        }, {
-            word: "peanuts",
-            clue: "causes allergic reaction",
         }],
     };
 
     updateWordState = (newInputValues) => {
-        this.setState({inputValues: newInputValues});
+        this.setState({words: newInputValues});
     };
 
     updateBoard = (newBoard) => {
@@ -36,7 +27,6 @@ class App extends Component {
     };
 
     render() {
-        console.table(this.state.board);
         return (
             <div className="App">
                 <View {...this.state}/>

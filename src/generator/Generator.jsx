@@ -12,7 +12,7 @@ class Generator extends Component {
     };
 
     state = {
-        words: this.shuffleArray(this.props.inputValues),
+        words: this.shuffleArray(this.props.words),
     };
 
     direction = {
@@ -21,8 +21,8 @@ class Generator extends Component {
     };
 
     handleInputChange = (inputIndex, type) => (event) => {
-        const {inputValues} = this.props;
-        const newInputValues = [...inputValues];
+        const {words} = this.props;
+        const newInputValues = [...words];
 
         if (newInputValues[inputIndex]) {
             newInputValues[inputIndex][type] = event.target.value;
@@ -49,7 +49,7 @@ class Generator extends Component {
                     let randomDirection = Math.floor(Math.random() * Object.keys(this.direction).length);
                     this.insertFirstWord(word, randomDirection % 2 ? this.direction.HORIZONTAL : this.direction.VERTICAL);
                 } else {
-                    this.placeAWord(word);
+                    // this.placeAWord(word);
                 }
                 // delete the placed word.
                 words.splice(i, 1);
@@ -58,13 +58,25 @@ class Generator extends Component {
         }, 0);
     }
 
+    generateCellValue = (cell) => {
+        return {
+            word: "beer",
+            letter: ".",
+            letterIndex: 0,
+            row: 0,
+            column: 0,
+            direction: null,
+            clue: null,
+            ...cell,
+        }
+    };
 
     generateBoard = () => {
         const {SIZE} = this.props.options;
 
         const board = Array(SIZE);
         for (let row = 0; row < SIZE; row++) {
-            board[row] = Array(SIZE).fill(".");
+            board[row] = Array(SIZE).fill(this.generateCellValue({row}));
         }
 
         this.props.updateBoard(board);
@@ -91,16 +103,16 @@ class Generator extends Component {
     };
 
     renderInputRows() {
-        const {inputValues} = this.props;
-        if (!inputValues) {
+        const {words} = this.props;
+        if (!words) {
             return null;
         }
 
-        const newThing = inputValues.map((inputValue, index) => this.renderInputPair(index, inputValue));
+        const newThing = words.map((inputValue, index) => this.renderInputPair(index, inputValue));
 
         return [
             ...newThing,
-            this.renderInputPair(inputValues.length, {}),
+            this.renderInputPair(words.length, {}),
         ];
     }
 
@@ -110,7 +122,7 @@ class Generator extends Component {
 
         board.forEach((row, rowIndex) => {
             row.forEach((cell, columnIndex) => {
-                if (cell.toLowerCase() === letter.toLowerCase()) {
+                if (cell.letter.toLowerCase() === letter.toLowerCase()) {
                     matches.push({rowIndex, columnIndex});
                 }
             });
@@ -123,15 +135,15 @@ class Generator extends Component {
         let letterMatches = [];
 
         [...word.word].forEach((letter, index) => {
-            if (index >= 1 && index <= word.word.length) {
-                 letterMatches = this.findWhereLetterExistsOnBoard(letter);
+            if (index >= 1 && index < word.word.length) {
+                letterMatches = this.findWhereLetterExistsOnBoard(letter);
             }
         });
 
         // if any letterMatches
         if (!!letterMatches.length) {
             console.info(`MATCHES: [${word.word}] ==>`, letterMatches);
-            this.insertAWord(word.word, this.direction.HORIZONTAL)
+            this.insertAWord(word, this.direction.HORIZONTAL)
         } else {
             console.info(`NO MATCHES: [${word.word}]`);
             //this.insertAWord(word.word, this.direction.HORIZONTAL)
@@ -156,9 +168,17 @@ class Generator extends Component {
         board[rowNumber].forEach((cell, index) => {
             if (index < word.word.length) {
                 if (direction === this.direction.HORIZONTAL) {
-                    board[rowNumber][columnStartIndex + index] = word.word[index];
+                    board[rowNumber][columnStartIndex + index] = this.generateCellValue({
+                        row: rowNumber,
+                        column: columnStartIndex + index,
+                        letter: word.word[index],
+                    });
                 } else {
-                    board[columnStartIndex + index][rowNumber] = word.word[index];
+                    board[columnStartIndex + index][rowNumber] = this.generateCellValue({
+                        row: rowNumber,
+                        column: columnStartIndex + index,
+                        letter: word.word[index],
+                    });
                 }
             }
         });
@@ -174,17 +194,17 @@ class Generator extends Component {
         board.forEach((row, rowIndex) => {
             // the row we want to insert word into
             if (rowIndex === rowNumber) {
-                const columnStart = Math.floor(Math.random() * (board[rowNumber].length - (word.length - 1)));
+                const columnStart = Math.floor(Math.random() * (board[rowNumber].length - (word.word.length - 1)));
                 let startRowIndexForWord = rowNumber;
                 let startColumnIndexForWord = columnStart;
 
                 row.forEach((letter, columnIndex) => {
-                    if (columnIndex < word.length) {
+                    if (columnIndex < word.word.length) {
                         if (direction === this.direction.HORIZONTAL) {
-                            board[startRowIndexForWord][startColumnIndexForWord + columnIndex] = word[columnIndex];
+                            board[startRowIndexForWord][startColumnIndexForWord + columnIndex] = word.word[columnIndex];
                         }
                         if (direction === this.direction.VERTICAL) {
-                            board[columnIndex][startColumnIndexForWord] = word[columnIndex];
+                            board[columnIndex][startColumnIndexForWord] = word.word[columnIndex];
                         }
                     }
                 });

@@ -6,38 +6,18 @@ class View extends Component {
         this.renderWordOntoRow();
     }
 
-    renderCrosswordRow = (input) => {
-        return input.map(row => {
-            return (
-                <div className="crossword-row">
-                    <div className="crossword-letter">
-                        <svg viewBox="-50 -50 100 100" preserveAspectRatio="xMidYMid meet">
-                            <text
-                                fontSize="20pt"
-                                dy=".3em"
-                            >{row.clue}</text>
-                        </svg>
-                    </div>
-                    {[...row.word].map(letter => (
-                        <div className="crossword-letter">{letter}</div>
-                    ))}
-                </div>
-            );
-        })
-    };
-
     renderWordOntoRow = (word) => {
-        const {inputValues} = this.props;
+        const {words} = this.props;
 
-        return inputValues.map(row => {
+        return words.map(row => {
             return (
                 <div className="crossword-row">
                     <div className="crossword-letter">
                         <svg viewBox="-50 -50 100 100" preserveAspectRatio="xMidYMid meet">
-                            <text
+                            <textfin
                                 fontSize="20pt"
                                 dy=".3em"
-                            >{row.clue}</text>
+                            >{row.clue}</textfin>
                         </svg>
                     </div>
                     {[...row.word].map(letter => (
@@ -54,14 +34,14 @@ class View extends Component {
         return board.map(row => {
             return (
                 <div className="crossword-row">
-                    {row.map(letter => {
-                        if (letter === ".") {
+                    {row.map(r => {
+                        if (r.letter === ".") {
                             return (
-                                <div className="crossword-letter block">{letter}</div>
+                                <div className="crossword-letter block">{r.letter}</div>
                             );
                         }
                         return (
-                            <div className={`crossword-letter ${letter === "." && "block"}`}>{letter}</div>
+                            <div className={`crossword-letter ${r.letter === "." ? "block" : ""}`}>{r.letter}</div>
                         );
                     })}
                 </div>
