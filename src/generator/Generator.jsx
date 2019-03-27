@@ -45,7 +45,12 @@ class Generator extends Component {
             }
 
             this.state.words.forEach((word, i) => {
-                this.insertAWord(word, i % 2 ? this.direction.HORIZONTAL : this.direction.VERTICAL);
+                if (i === 0) {
+                    let randomDirection = Math.floor(Math.random() * Object.keys(this.direction).length);
+                    this.insertFirstWord(word, randomDirection % 2 ? this.direction.HORIZONTAL : this.direction.VERTICAL);
+                } else {
+                    this.placeAWord(word);
+                }
                 // delete the placed word.
                 words.splice(i, 1);
                 this.setState({words});
@@ -99,8 +104,7 @@ class Generator extends Component {
         ];
     }
 
-    findWhereLetterExistsOnBoard = (event) => {
-        const letter = event.target.value;
+    findWhereLetterExistsOnBoard = (letter) => {
         const {board} = this.props;
         let matches = [];
 
@@ -116,44 +120,22 @@ class Generator extends Component {
     };
 
     placeAWord = (word) => {
-        [...word].forEach((letter, index) => {
-            if (index >= 1 && index <= letter.length) {
-                let matches = this.findWhereLetterExistsOnBoard({
-                    target: {
-                        value: letter,
-                    }
-                }) || [];
+        let letterMatches = [];
 
-                // if any matches
-                if (!!matches.length) {
-                    console.info(`MATCHES: [${word}] (${letter}) ==>`, matches);
-                } else {
-                    console.info(`NO MATCHES: [${word}]`);
-                    this.insertAWord(word, this.direction.HORIZONTAL)
-                }
+        [...word.word].forEach((letter, index) => {
+            if (index >= 1 && index <= word.word.length) {
+                 letterMatches = this.findWhereLetterExistsOnBoard(letter);
             }
         });
 
-        // this.canPlaceLetterAt();
-        // board[rowNumber].forEach((row, rowIndex) => {
-//
-        //         row.forEach((letter, columnIndex) => {
-        //             if (letter === word[columnIndex]) {
-        //                 console.info("MATCH => ", word[columnIndex], letter, `row: ${rowIndex}, col:${columnIndex}`);
-        //                 startRowIndexForWord = rowIndex;
-        //                 startColumnIndexForWord = columnIndex;
-        //             }
-        //             if (columnIndex < word.length) {
-        //                 if (direction === this.direction.HORIZONTAL) {
-        //                     board[startRowIndexForWord][startColumnIndexForWord + columnIndex] = word[columnIndex];
-        //                 }
-        //                 if (direction === this.direction.VERTICAL) {
-        //                     board[columnIndex][startColumnIndexForWord] = word[columnIndex];
-        //                 }
-        //             }
-        //         });
-        //     }
-        // })
+        // if any letterMatches
+        if (!!letterMatches.length) {
+            console.info(`MATCHES: [${word.word}] ==>`, letterMatches);
+            this.insertAWord(word.word, this.direction.HORIZONTAL)
+        } else {
+            console.info(`NO MATCHES: [${word.word}]`);
+            //this.insertAWord(word.word, this.direction.HORIZONTAL)
+        }
     };
 
     canPlaceLetterAt = (row, column, letter) => {
@@ -166,7 +148,7 @@ class Generator extends Component {
         }
     };
 
-    insertAWord = (word, direction) => {
+    insertFirstWord = (word, direction) => {
         let {board} = this.props;
         const rowNumber = Math.floor(board.length / 2);
         const columnStartIndex = Math.floor((board.length - word.word.length) / 2);
@@ -184,7 +166,7 @@ class Generator extends Component {
         this.props.updateBoard(board);
     };
 
-    insertWords = (word, direction) => {
+    insertAWord = (word, direction) => {
         let {board} = this.props;
 
         const rowNumber = Math.floor(Math.random() * board.length);
@@ -221,7 +203,6 @@ class Generator extends Component {
                     <div className="right">Clue</div>
                 </div>
 
-                <input onChange={this.findWhereLetterExistsOnBoard} maxLength={1}/>
                 <form onSubmit={(e) => e.preventDefault()}>
                     {this.renderInputRows()}
                 </form>
