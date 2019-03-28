@@ -3,10 +3,10 @@ import './View.scss';
 
 class View extends Component {
     componentDidMount() {
-        this.renderWordOntoRow();
+        this.renderWordsOntoRow();
     }
 
-    renderWordOntoRow = (word) => {
+    renderWordsOntoRow = () => {
         const {words} = this.props;
 
         return words.map(row => {
@@ -35,14 +35,12 @@ class View extends Component {
             return (
                 <div className="crossword-row">
                     {row.map(r => {
-                        if (r.letter === ".") {
-                            return (
-                                <div className="crossword-letter block">{r.letter}</div>
-                            );
+                        const isEmptyCell = (r.letter === ".");
+
+                        if (isEmptyCell) {
+                            return (<div id={`${r.row}:${r.column}`} className="crossword-letter block">{r.row}</div>);
                         }
-                        return (
-                            <div className={`crossword-letter ${r.letter === "." ? "block" : ""}`}>{r.letter}</div>
-                        );
+                        return (<div id={`${r.row}:${r.column}`} className="crossword-letter">{r.letter}</div>);
                     })}
                 </div>
             );

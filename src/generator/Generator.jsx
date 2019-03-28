@@ -49,7 +49,7 @@ class Generator extends Component {
                     let randomDirection = Math.floor(Math.random() * Object.keys(this.direction).length);
                     this.insertFirstWord(word, randomDirection % 2 ? this.direction.HORIZONTAL : this.direction.VERTICAL);
                 } else {
-                    // this.placeAWord(word);
+                    this.placeAWord(word);
                 }
                 // delete the placed word.
                 words.splice(i, 1);
@@ -74,10 +74,18 @@ class Generator extends Component {
     generateBoard = () => {
         const {SIZE} = this.props.options;
 
-        const board = Array(SIZE);
-        for (let row = 0; row < SIZE; row++) {
-            board[row] = Array(SIZE).fill(this.generateCellValue({row}));
-        }
+        const board = Array(SIZE).fill(null);
+        board.forEach((row, i) => board[i] = Array(SIZE).fill(this.generateCellValue({row: i})));
+
+        board.forEach((row, rowIndex) => {
+
+            board[rowIndex].forEach((column, columnIndex) => {
+                board[rowIndex][columnIndex] = this.generateCellValue({
+                    row: rowIndex,
+                    column: columnIndex,
+                });
+            })
+        });
 
         this.props.updateBoard(board);
     };
