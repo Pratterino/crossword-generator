@@ -38,7 +38,7 @@ class View extends Component {
                         const isEmptyCell = (r.letter === ".");
 
                         if (isEmptyCell) {
-                            return (<div id={`${r.row}:${r.column}`} className="crossword-letter block">{r.row}</div>);
+                            return (<div id={`${r.row}:${r.column}`} className="crossword-letter block">{"."}</div>);
                         }
                         return (<div id={`${r.row}:${r.column}`} className="crossword-letter">{r.letter}</div>);
                     })}
