@@ -15,6 +15,9 @@ class App extends Component {
         }, {
             word: "money",
             clue: "people want it",
+        }, {
+            word: "frontend",
+            clue: "fun stuff",
         }],
     };
 

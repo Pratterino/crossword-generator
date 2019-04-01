@@ -162,10 +162,9 @@ class Generator extends Component {
                     });
 
                     matches = {
-                        matches: mapped,
-                        words: word.word,
                         word,
                         letter,
+                        matches: mapped,
                     };
                 }
             }
@@ -175,26 +174,22 @@ class Generator extends Component {
         if (matches) {
             console.info(`MATCHES: [${word.word}] ==>`, matches);
             let wordToInsert = _.sample(matches.matches);
-
+            const invertedDirectionOfMatch = this.getInvertedDirection(wordToInsert.cell.direction);
+            console.log(wordToInsert.cell.direction, "=>", invertedDirectionOfMatch);
             //TODO: direction == !matched direciton.
-            this.insertAWord(word, this.direction.HORIZONTAL, {
+            this.insertAWord(word, invertedDirectionOfMatch, {
                 row: wordToInsert.startRowIndex,
                 column: wordToInsert.startColumnIndex - wordToInsert.index,
             });
         } else {
             console.info(`NO MATCHES: [${word.word}]`);
+            throw new Error(`No match for word ${word.word}!`)
             //this.insertAWord(word.word, this.direction.HORIZONTAL)
         }
     };
 
-    canPlaceLetterAt = (row, column, letter) => {
-        switch (this.props.board[row][column]) {
-            case '.':
-            case letter:
-                return true;
-            default:
-                return false;
-        }
+    getInvertedDirection = (direction) => {
+        return direction === this.direction.HORIZONTAL ? this.direction.VERTICAL : this.direction.HORIZONTAL;
     };
 
     insertFirstWord = (word, direction) => {
@@ -206,12 +201,14 @@ class Generator extends Component {
             if (index < word.word.length) {
                 if (direction === this.direction.HORIZONTAL) {
                     board[rowNumber][columnStartIndex + index] = this.generateCellValue({
+                        direction,
                         row: rowNumber,
                         column: columnStartIndex + index,
                         letter: word.word[index],
                     });
                 } else {
                     board[columnStartIndex + index][rowNumber] = this.generateCellValue({
+                        direction,
                         row: rowNumber,
                         column: columnStartIndex + index,
                         letter: word.word[index],
@@ -232,12 +229,14 @@ class Generator extends Component {
             if (index < word.word.length) {
                 if (direction === this.direction.HORIZONTAL) {
                     board[rowNumber][columnStartIndex + index] = this.generateCellValue({
+                        direction,
                         row: rowNumber,
                         column: columnStartIndex + index,
                         letter: word.word[index],
                     });
                 } else {
                     board[columnStartIndex + index][rowNumber] = this.generateCellValue({
+                        direction,
                         row: rowNumber,
                         column: columnStartIndex + index,
                         letter: word.word[index],
@@ -250,7 +249,6 @@ class Generator extends Component {
     };
 
     render() {
-
         return (
             <section className="Generator">
                 <div className="generator-header">
