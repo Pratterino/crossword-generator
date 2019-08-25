@@ -13,7 +13,7 @@ class Generator extends Component {
     };
 
     state = {
-        words: this.shuffleArray(this.props.words),
+        words: this.props.words,
     };
 
     direction = {
@@ -47,7 +47,7 @@ class Generator extends Component {
 
             this.state.words.forEach((word, i) => {
                 if (i === 0) {
-                    let randomDirection = Math.floor(Math.random() * Object.keys(this.direction).length);
+                    const randomDirection = Math.floor(Math.random() * Object.keys(this.direction).length);
                     this.insertFirstWord(word, randomDirection % 2 ? this.direction.HORIZONTAL : this.direction.VERTICAL);
                 } else {
                     //this.insertAWord(word, offsetedCoordinates)
@@ -133,9 +133,9 @@ class Generator extends Component {
                 if (cell.letter.toLowerCase() === letter.toLowerCase()) {
                     matches.push({
                         letter,
-                        cell,
                         rowIndex,
                         columnIndex,
+                        cell,
                     });
                 }
             });
@@ -144,30 +144,28 @@ class Generator extends Component {
         return matches;
     };
 
+    canBePlaced = (word) => {
+        console.info(">>>", word);
+    };
+
     placeAWord = (word) => {
         let matches = null;
 
         [...word.word].forEach((letter, index) => {
-            if (index >= 1 && index < word.word.length) {
                 const _matches = this.findWhereLetterExistsOnBoard(letter);
-                let mapped;
                 if (_matches.length) {
-                    mapped = _matches.map(match => {
-                        return {
+                    matches = {
+                        word,
+                        letter,
+                        matches: _matches.map(match => ({
                             ...match,
                             index,
                             startRowIndex: match.rowIndex,
                             startColumnIndex: match.columnIndex,
-                        }
-                    });
-
-                    matches = {
-                        word,
-                        letter,
-                        matches: mapped,
+                        })),
                     };
                 }
-            }
+                this.canBePlaced(matches);
         });
 
         // if any matches
@@ -175,15 +173,12 @@ class Generator extends Component {
             console.info(`MATCHES: [${word.word}] ==>`, matches);
             let wordToInsert = _.sample(matches.matches);
             const invertedDirectionOfMatch = this.getInvertedDirection(wordToInsert.cell.direction);
-            console.log(wordToInsert.cell.direction, "=>", invertedDirectionOfMatch);
-            //TODO: direction == !matched direciton.
             this.insertAWord(word, invertedDirectionOfMatch, {
-                row: wordToInsert.startRowIndex,
-                column: wordToInsert.startColumnIndex - wordToInsert.index,
+                row: invertedDirectionOfMatch === this.direction.HORIZONTAL ? wordToInsert.startRowIndex : wordToInsert.startColumnIndex ,
+                column: invertedDirectionOfMatch === this.direction.HORIZONTAL ? wordToInsert.startColumnIndex - wordToInsert.index : wordToInsert.startRowIndex,
             });
         } else {
-            console.info(`NO MATCHES: [${word.word}]`);
-            throw new Error(`No match for word ${word.word}!`)
+            console.error(`No match for word ${word.word}!`);
             //this.insertAWord(word.word, this.direction.HORIZONTAL)
         }
     };
@@ -194,8 +189,8 @@ class Generator extends Component {
 
     insertFirstWord = (word, direction) => {
         let {board} = this.props;
-        const rowNumber = Math.floor(board.length / 2);
-        const columnStartIndex = Math.floor((board.length - word.word.length) / 2);
+        const rowNumber = 2;
+        const columnStartIndex = 2;
 
         board[rowNumber].forEach((cell, index) => {
             if (index < word.word.length) {
